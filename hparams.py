@@ -7,8 +7,8 @@ hparams = hparam_tf.hparam.HParams(
     name="deepvoice3",
 
     # Text:
-    # [en, jp]
-    frontend='en',
+    # [en, jp, pinyin]
+    frontend='pinyin',
 
     # Replace words to its pronunciation with fixed probability.
     # e.g., 'hello' to 'HH AH0 L OW1'
