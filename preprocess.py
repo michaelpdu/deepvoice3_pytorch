@@ -2,13 +2,18 @@
 """
 Preprocess dataset
 
-usage: preprocess.py [options] <name> <in_dir> <out_dir>
+usage: preprocess.py [options] <name> <input> <out_dir>
 
 options:
     --num_workers=<n>        Num workers.
     --hparams=<parmas>       Hyper parameters [default: ].
     --preset=<json>          Path of preset parameters (json).
     -h, --help               Show help message.
+
+notes:
+    name                    only supports following names: 
+                              "jsut", "ljspeech", "vctk", "nikl_m", "nikl_s", "json_meta", "generic"
+    input                   meta file for 'generic', in_dir for others
 """
 from docopt import docopt
 import os
@@ -39,7 +44,7 @@ def write_metadata(metadata, out_dir):
 if __name__ == "__main__":
     args = docopt(__doc__)
     name = args["<name>"]
-    in_dir = args["<in_dir>"]
+    in_dir = args["<input>"]
     out_dir = args["<out_dir>"]
     num_workers = args["--num_workers"]
     num_workers = cpu_count() if num_workers is None else int(num_workers)
@@ -54,6 +59,6 @@ if __name__ == "__main__":
     assert hparams.name == "deepvoice3"
     print(hparams_debug_string())
 
-    assert name in ["jsut", "ljspeech", "vctk", "nikl_m", "nikl_s", "json_meta"]
+    assert name in ["jsut", "ljspeech", "vctk", "nikl_m", "nikl_s", "json_meta", "generic"]
     mod = importlib.import_module(name)
     preprocess(mod, in_dir, out_dir, num_workers)

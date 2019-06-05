@@ -6,11 +6,11 @@ import audio
 from hparams import hparams
 
 
-def build_from_path(in_dir, out_dir, num_workers=1, tqdm=lambda x: x):
-    '''Preprocesses the LJ Speech dataset from a given input path into a given output directory.
+def build_from_path(meta_file, out_dir, num_workers=1, tqdm=lambda x: x):
+    '''Preprocesses the voice dataset from a given input meta file into a given output directory.
 
       Args:
-        in_dir: The directory where you have downloaded the LJ Speech dataset
+        meta_file: The file which contains meta info.(Format: abs path|text of audio)
         out_dir: The directory to write the output into
         num_workers: Optional number of worker processes to parallelize across
         tqdm: You can optionally pass tqdm to get a nice progress bar
@@ -24,11 +24,9 @@ def build_from_path(in_dir, out_dir, num_workers=1, tqdm=lambda x: x):
     executor = ProcessPoolExecutor(max_workers=num_workers)
     futures = []
     index = 1
-    with open(os.path.join(in_dir, 'metadata.csv'), encoding='utf-8') as f:
+    with open(meta_file, encoding='utf-8') as f:
         for line in f:
-            parts = line.strip().split('|')
-            wav_path = os.path.join(in_dir, 'wavs', '%s.wav' % parts[0])
-            text = parts[2]
+            (wav_path, text) = line.strip().split('|')
             if len(text) < hparams.min_text:
                 continue
             futures.append(executor.submit(
@@ -52,8 +50,6 @@ def _process_utterance(out_dir, index, wav_path, text):
     Returns:
       A (spectrogram_filename, mel_filename, n_frames, text) tuple to write to train.txt
     '''
-    _, filename = os.path.split(wav_path)
-    filename_wo_ext, ext = os.path.splitext(filename)
 
     # Load the audio to a numpy array:
     wav = audio.load_wav(wav_path)
@@ -69,8 +65,8 @@ def _process_utterance(out_dir, index, wav_path, text):
     mel_spectrogram = audio.melspectrogram(wav).astype(np.float32)
 
     # Write the spectrograms to disk:
-    spectrogram_filename = filename_wo_ext + '-spec-%05d.npy' % index
-    mel_filename = filename_wo_ext + '-mel-%05d.npy' % index
+    spectrogram_filename = 'ljspeech-spec-%05d.npy' % index
+    mel_filename = 'ljspeech-mel-%05d.npy' % index
     np.save(os.path.join(out_dir, spectrogram_filename), spectrogram.T, allow_pickle=False)
     np.save(os.path.join(out_dir, mel_filename), mel_spectrogram.T, allow_pickle=False)
 

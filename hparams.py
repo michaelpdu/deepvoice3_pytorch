@@ -133,7 +133,7 @@ hparams = hparam_tf.hparam.HParams(
     # 2: "fully ignore recognition",
     ignore_recognition_level=2,
     # when dealing with non-dedicated speech dataset(e.g. movie excerpts), setting min_text above 15 is desirable. Can be adjusted by dataset.
-    min_text=20,
+    min_text=2,
     # if true, data without phoneme alignment file(.lab) will be ignored
     process_only_htk_aligned=False,
 )
