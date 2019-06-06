@@ -14,6 +14,8 @@ and the property:
 """
 from deepvoice3_pytorch.frontend import en
 
+from deepvoice3_pytorch.frontend import pinyin
+
 # optinoal Japanese frontend
 try:
     from deepvoice3_pytorch.frontend import jp
